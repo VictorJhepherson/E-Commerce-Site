@@ -5,7 +5,7 @@ import Logo from "../../assets/loja-online.svg";
 
 import { Form, Container } from "./styles";
 
-import api from "../../services/api";
+import Api from "../../services/api";
 
 class SignUp extends Component {
   state = {
@@ -21,8 +21,13 @@ class SignUp extends Component {
       this.setState({ error: "Preencha todos os dados para se cadastrar" });
     } else {
       try {
-        await api.post("/users", { email, password });
-        this.props.history.push("/");
+        let json = await Api.signUp(email, password); 
+        console.log(json);
+        if(json.token) {
+          this.props.history.push("/");
+        } else {
+          alert("Erro: " + json.error);
+        }
       } catch (err) {
         console.log(err);
         this.setState({ error: "Ocorreu um erro ao registrar sua conta. T.T" });
@@ -34,7 +39,7 @@ class SignUp extends Component {
     return (
       <Container>
         <Form onSubmit={this.handleSignUp}>
-          <img src={Logo} alt="E-Commerce logo" />
+          <img src={Logo} alt="E-Commerce" />
           {this.state.error && <p>{this.state.error}</p>}
           <input
             type="email"

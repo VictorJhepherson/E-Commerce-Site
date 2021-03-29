@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link, withRouter } from "react-router-dom";
 
 import Logo from "../../assets/loja-online.svg";
-import api from "../../services/api";
+import Api from "../../services/api";
 import { login } from "../../services/auth";
 
 import { Form, Container } from "./styles";
@@ -21,9 +21,13 @@ class SignIn extends Component {
       this.setState({ error: "Preencha e-mail e senha para continuar!" });
     } else {
       try {
-        const response = await api.post("/users/login", { email, password });
-        login(response.data.token);
-        this.props.history.push("/app");
+        let json = await Api.signIn(email, password); 
+        if(json.token) {
+          login(json.token);
+          this.props.history.push("/app");
+        } else {
+          alert('E-mail e/ou senha incorretos!');
+        }
       } catch (err) {
         this.setState({
           error:
@@ -37,7 +41,7 @@ class SignIn extends Component {
     return (
       <Container>
         <Form onSubmit={this.handleSignIn}>
-          <img src={Logo} alt="Airbnb logo" />
+          <img src={Logo} alt="E-Commerce" />
           {this.state.error && <p>{this.state.error}</p>}
           <input
             type="email"
